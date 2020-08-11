@@ -17,7 +17,7 @@ class GlobalState extends React.Component {
 
     register(username, password) {
         axios
-            .post('http://localhost:8000/api/user/register', {
+            .post('https://mineboking.herokuapp.com/api/user/register', {
                 username: username,
                 password: password,
             })
@@ -31,7 +31,7 @@ class GlobalState extends React.Component {
 
     login(username, password, rememberMe = false) {
         axios
-            .post('http://localhost:8000/api/user/login', {
+            .post('https://mineboking.herokuapp.com/api/user/login', {
                 username: username,
                 password: password,
             })
