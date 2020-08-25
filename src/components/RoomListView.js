@@ -1,14 +1,11 @@
 import React from 'react';
 import axios from 'axios';
 import moment from 'moment';
-import { Link } from 'react-router-dom';
-import { Steps, Card, Avatar,Row, Col, DatePicker, Badge, Button, Select, Modal, Input } from 'antd';
+import { Steps, Card,Row, Col, DatePicker, Badge, Button, Select, Modal, Input } from 'antd';
 import { PoweroffOutlined,EyeInvisibleOutlined,EyeOutlined } from '@ant-design/icons';
-
-
+import PropagateLoader from "react-spinners/PropagateLoader";
 import UserContext from '../context/usercontext';
 import { apiConfig } from '../config/config';
-
 const { Meta } = Card;
 const { Step } = Steps;
 const steps = [
@@ -32,7 +29,6 @@ const steps = [
 
 class RoomList extends React.Component {
     static contextType = UserContext;
-
     constructor(props) {
         super(props);
         this.state = {
@@ -48,9 +44,9 @@ class RoomList extends React.Component {
             dis_select: 'disabled',
             purpose: 'Purpose not provided',
             date: moment().add(1, 'day').format('YYYY-MM-DD'),
+            loading: true
         };
     }
-
 
     fetchData = () => {
         const config = {
@@ -62,7 +58,7 @@ class RoomList extends React.Component {
                 b = b.service_name.toLowerCase();
                 return a < b ? -1 : a > b ? 1 : 0;
             });
-            this.setState({ roomData: res.data });
+            this.setState({ roomData: res.data,loading:false });
         });
 
         axios.get(`${apiConfig.baseUrl}chain/all`, config).then((res) => {
@@ -71,14 +67,12 @@ class RoomList extends React.Component {
                 b = b.chain_name.toLowerCase();
                 return a < b ? -1 : a > b ? 1 : 0;
             });
-            this.setState({ chainData: res.data });
+            this.setState({ chainData: res.data,loading:false });
         });
     };
 
     handleServiceChange = (value) => {
-        this.setState({ service: value })
-
-
+        this.setState({ service: value,loading:true })
         //  if(this.state.service){
         const config = {
             headers: { Authorization: `Token ${this.context.token}` },
@@ -93,7 +87,7 @@ class RoomList extends React.Component {
                 },
                 config
             )
-            .then((res) => this.setState({ filterData: res.data, current: 2 }))
+            .then((res) => this.setState({ filterData: res.data, current: 2,loading: false }))
         // }
 
         //  }
@@ -109,7 +103,7 @@ class RoomList extends React.Component {
     }
 
     handleChainChange = (value) => {
-        this.setState({ chain: value, current: 1,dis_select:'' })
+        this.setState({ chain: value, current: 1,dis_select:''})
         const config = {
             headers: { Authorization: `Token ${this.context.token}` },
         };
@@ -131,7 +125,7 @@ class RoomList extends React.Component {
     }
     handleDateChange = (value) => {
         //alert(value)
-        this.setState({ date: value, current: 3 })
+        this.setState({ date: value, current: 3,loading:true })
         const config = {
             headers: { Authorization: `Token ${this.context.token}` },
         };
@@ -146,7 +140,7 @@ class RoomList extends React.Component {
                 },
                 config
             )
-            .then((res) => this.setState({ filterData: res.data, modalVisible: false, purpose: null, current: 3 }))
+            .then((res) => this.setState({ filterData: res.data, modalVisible: false, purpose: null, current: 3,loading:false }))
         }
   
     }
@@ -157,7 +151,7 @@ class RoomList extends React.Component {
         const config = {
             headers: { Authorization: `Token ${this.context.token}` },
         };
-        // alert(this.state.start)
+        this.setState({modalVisible: false,loading:true })
         axios
             .post(
                 `${apiConfig.baseUrl}book/`,
@@ -174,6 +168,7 @@ class RoomList extends React.Component {
                 const config = {
                     headers: { Authorization: `Token ${this.context.token}` },
                 };
+           
                 axios
                     .post(
                         `${apiConfig.baseUrl}booking/all`,
@@ -184,7 +179,7 @@ class RoomList extends React.Component {
                         },
                         config
                     )
-                    .then((res) => this.setState({ filterData: res.data, modalVisible: false, purpose: null, current: 3 }))
+                    .then((res) => this.setState({ filterData: res.data, modalVisible: false, purpose: null, current: 3,loading:false }))
 
             });
         // this.Next()
@@ -197,6 +192,18 @@ class RoomList extends React.Component {
         const { current } = this.state;
         return (
             <div>
+  <div className={this.state.loading ? 'parentDisable' : ''} width="100%">
+                        <div className='overlay-box'>
+                            <PropagateLoader
+                                // css={override}
+                                sizeUnit={"px"}
+                                size={25}
+                                color={'white'}
+                                loading={this.state.loading}
+                            />
+                        </div>
+                    </div>
+                <div>
                 <Row gutter={[16, { xs: 32, sm: 24, md: 16, lg: 8 }]} style={{ justifyContent: 'center', padding: '15px' }}>
                     <Steps size="small" current={current}>
                         {steps.map(item => (
@@ -208,8 +215,6 @@ class RoomList extends React.Component {
 
                 <Row gutter={[16, { xs: 32, sm: 24, md: 16, lg: 8 }]} style={{ justifyContent: 'center', padding: '15px' }}>
 
-                
-
                     <Col className="gutter-row" span={{ xs: 24, sm: 12, md: 8, lg: 6 }}>
                         <Select
                             style={{ width: 180 }}
@@ -217,8 +222,7 @@ class RoomList extends React.Component {
                             placeholder='Chọn cơ sở'
                             onChange={(value) => {
                                 this.handleChainChange(value)
-                            }}
-                        >
+                            }}>
                             {
                                 this.state.chainData.map((item, key) =>
                                     <Select.Option key={item.id} value={item.id}>{item.chain_name}</Select.Option>
@@ -329,7 +333,9 @@ class RoomList extends React.Component {
                         />
                     </Modal>
                 </Row>
+                </div>
             </div>
+
         );
     }
 }

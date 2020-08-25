@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Input, Button, Select } from 'antd';
+import { Form, Input, Button } from 'antd';
 import { Link } from 'react-router-dom';
 
 import UserContext from '../context/usercontext';

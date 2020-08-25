@@ -1,11 +1,11 @@
 import React from 'react';
 import { Redirect, Link, withRouter } from 'react-router-dom';
-import { Layout, Menu, Breadcrumb } from 'antd';
+import { Layout, Menu } from 'antd';
 import { CalendarOutlined, ClockCircleOutlined, HomeOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons';
 
 import UserContext from '../context/usercontext';
 
-const { Header, Content, Footer, Sider } = Layout;
+const {Content, Footer, Sider } = Layout;
 
 class HomePage extends React.Component {
     static contextType = UserContext;

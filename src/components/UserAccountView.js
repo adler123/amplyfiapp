@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import { Avatar, Row, Descriptions } from 'antd';
+import {Row, Descriptions } from 'antd';
 
 import { apiConfig } from "../config/config";
 import UserContext from '../context/usercontext';
